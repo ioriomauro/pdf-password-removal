@@ -59,8 +59,10 @@ def main(opts):
                 logger.info('Saved %r', newname)
                 break
             except SystemError as e:
-                msg = getattr(e, '__cause__', str(e))
-                logger.info('Skipping %r: %s', name, msg)
+                msg = getattr(e, '__cause__')
+                if msg is None:
+                    msg = str(e)
+                logger.warning('Skipping %r: %s', name, msg)
                 break
             except pikepdf.PasswordError:
                 if passwd == '':
