@@ -53,7 +53,7 @@ def main(opts):
                 pdf = pikepdf.open(name, password=passwd)
                 if not passwd:
                     raise SystemError(
-                        'No password was needed to open this PDF.')
+                        'No password is needed to open this PDF.')
                 newname = get_nopwd_name(name)
                 pdf.save(newname)
                 logger.info('Saved %r', newname)
