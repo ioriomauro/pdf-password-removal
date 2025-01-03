@@ -35,7 +35,7 @@ def split(name, pwd):
     for i, p in enumerate(pdf.pages):
         s = pikepdf.Pdf.new()
         s.pages.append(p)
-        pname = f'{dirname}/{fname}-P{i:02d}.{fext}'
+        pname = f'{dirname}/{fname}-P{i:02d}{fext}'
         s.save(pname)
 
 
