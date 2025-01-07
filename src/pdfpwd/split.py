@@ -7,8 +7,16 @@ import sys
 
 import pikepdf
 
+from .utils import parse_range_list
+
 
 logger = logging.getLogger('main')
+
+
+class ArgTypes:
+    @classmethod
+    def range(cls, range_list):
+        return parse_range_list(range_list)
 
 
 def get_parser():
@@ -23,19 +31,25 @@ def get_parser():
         help='Ask for password for every file name provided '
              '(default: ask once)')
     parser.add_argument(
-        'pdfnames', nargs='+', help='File name to unprotect')
+        '-p', '--pages', dest='pages', type=ArgTypes.range, default=[],
+        help='Extract only desired pages. Pages can be specified via '
+             'comma-separated numbers or ranges. E.g.: "1,4-5,17-20,23". Page '
+             'numbers are 1-based '
+             '(default: extract all pages)')
+    parser.add_argument(
+        'pdfnames', nargs='+', help='File name to split')
 
     return parser
 
 
-def split(name, pwd):
+def split(name, pwd, pages):
     pdf = pikepdf.open(name, password=pwd)
     dirname, basename = os.path.split(name)
     fname, fext = os.path.splitext(basename)
-    for i, p in enumerate(pdf.pages):
+    for p in pages or range(1, len(pdf.pages) + 1):
         s = pikepdf.Pdf.new()
-        s.pages.append(p)
-        pname = f'{dirname}/{fname}-P{i:02d}{fext}'
+        s.pages.append(pdf.pages[p-1])
+        pname = f'{dirname}/{fname}-P{p:02d}{fext}'
         s.save(pname)
 
 
@@ -52,7 +66,7 @@ def main(opts):
                 return 2
         while True:
             try:
-                split(name, passwd)
+                split(name, passwd, opts.pages)
                 logger.info('Split %r', name)
                 break
             except SystemError as e:
