@@ -23,7 +23,7 @@ def get_parser():
         help='Ask for password for every file name provided '
              '(default: ask once)')
     parser.add_argument(
-        'pdfnames', nargs='+', help='File name to unprotect')
+        'pdfnames', nargs='+', help='File names to join')
 
     return parser
 
